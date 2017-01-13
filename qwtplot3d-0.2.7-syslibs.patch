@@ -1,0 +1,50 @@
+From 3d33dedfc73e52933cb306f35fdf93bba913a2cf Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ville=20Skytt=C3=A4?= <ville.skytta@iki.fi>
+Date: Tue, 18 Mar 2014 20:04:43 +0200
+Subject: [PATCH] Build with system gl2ps instead of bundled one
+
+https://bugzilla.redhat.com/show_bug.cgi?id=1077865
+---
+ qwtplot3d-0.2.7-syslibs.patch | 37 +++++++++++++++++++++++++++++++++++++
+ qwtplot3d.spec                | 10 ++++++++--
+ 2 files changed, 45 insertions(+), 2 deletions(-)
+ create mode 100644 qwtplot3d-0.2.7-syslibs.patch
+
+@@ -0,0 +1,37 @@
+diff -up qwtplot3d/qwtplot3d.pro~ qwtplot3d/qwtplot3d.pro
+--- qwtplot3d/qwtplot3d.pro~	2014-03-18 19:56:30.129999508 +0200
++++ qwtplot3d/qwtplot3d.pro	2014-03-18 19:59:59.537370837 +0200
+@@ -81,15 +81,15 @@ HEADERS += include/qwt3d_surfaceplot.h \
+            include/qwt3d_multiplot.h
+ 
+ # gl2ps support
+-HEADERS+=3rdparty/gl2ps/gl2ps.h \
+-         include/qwt3d_io_gl2ps.h
++HEADERS+=include/qwt3d_io_gl2ps.h
+          
+-SOURCES+=src/qwt3d_io_gl2ps.cpp \
+-         3rdparty/gl2ps/gl2ps.c
++SOURCES+=src/qwt3d_io_gl2ps.cpp
++
++LIBS+=-lgl2ps -lGLU
+ 
+ # zlib support for gl2ps
+ zlib {
+   DEFINES += GL2PS_HAVE_ZLIB
+   win32:LIBS += zlib.lib
+ 	unix:LIBS  += -lz
+-}
+\ No newline at end of file
++}
+diff -up qwtplot3d/src/qwt3d_io_gl2ps.cpp~ qwtplot3d/src/qwt3d_io_gl2ps.cpp
+--- qwtplot3d/src/qwt3d_io_gl2ps.cpp~	2007-06-25 16:41:14.000000000 +0300
++++ qwtplot3d/src/qwt3d_io_gl2ps.cpp	2014-03-18 19:59:15.313446910 +0200
+@@ -4,7 +4,7 @@
+ 
+ #include <time.h>
+ #include "qwt3d_openglhelper.h"
+-#include "../3rdparty/gl2ps/gl2ps.h"
++#include <gl2ps.h>
+ #include "qwt3d_io_gl2ps.h"
+ #include "qwt3d_plot.h"
+ 
